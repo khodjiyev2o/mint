@@ -21,6 +21,7 @@ git clone https://github.com/khodjiyev2o/django-boilerplate
 
 3. Create virtual environment :
 
+
 ````
 python3 -m venv venv
 ````
