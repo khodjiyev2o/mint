@@ -48,3 +48,6 @@ repos:
         always_run: true
         pass_filenames: false
         language: system
+
+# Run these commands to enable pre-commit
+# pre-commit, pre-commit install,
