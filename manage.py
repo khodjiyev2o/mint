@@ -10,7 +10,7 @@ import environ
 def main():
     """Run administrative tasks."""
     base_dir = Path(__file__).resolve().parent
-    environ.Env().read_env(os.path.join(base_dir, ".env"))
+    environ.Env().read_env(os.path.join(base_dir, ".env.prod"))
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

@@ -6,7 +6,7 @@ from rest_framework import permissions
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="AX Technology Back End API",
+        title="Back End API",
         default_version="v0.1",
         description="Test",
         terms_of_service="https://yandex.ru/legal/confidential/",
