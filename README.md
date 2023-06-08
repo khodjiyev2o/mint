@@ -19,7 +19,6 @@ git clone https://github.com/khodjiyev2o/django-boilerplate
 2. Go to the project directory -> ./ax
 
 
-
 3. Create virtual environment :
 
 ````
