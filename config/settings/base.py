@@ -21,11 +21,14 @@ ALLOWED_HOSTS = ["*"]
 LOCAL_APPS = [
     "apps.users.apps.UsersConfig",
     "apps.common.apps.CommonConfig",
+    "apps.preventa.apps.PreventaConfig",
+    "apps.payment.apps.PaymentConfig",
 ]
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_yasg",
+    "storages",
 ]
 DJANGO_APPS = [
     "jazzmin",
@@ -88,21 +91,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = "ru"
+LANGUAGE_CODE = "en"
 
-TIME_ZONE = "Asia/Tashkent"
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
 USE_TZ = True
 
-
-STATIC_URL = "staticfiles/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = (BASE_DIR / "static",)
-
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -116,3 +112,62 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=99),
 }
+
+# swagger settings
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {"USE_SESSION_AUTH": False, "type": "apiKey", "name": "HTTP_AUTHORIZATION", "in": "header"}
+    }
+}
+# Google Auth settings
+GOOGLE_CLIENT_ID = os.environ.get("DJANGO_GOOGLE_OAUTH2_CLIENT_ID")
+IOS_CLIENT_ID = os.environ.get("DJANGO_GOOGLE_OAUTH2_IOS_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.environ.get("DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET")
+ANDROID_CLIENT_ID = os.environ.get("DJANGO_GOOGLE_OAUTH2_ANDROID_CLIENT_ID")
+
+# aws settings
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_DEFAULT_ACL = "public-read"
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+
+# s3 static settings
+AWS_LOCATION = "static"
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+STATICFILES_STORAGE = "config.storage_backends.StaticStorage"
+STATICFILES_DIRS = (BASE_DIR / "static",)
+
+# s3 public media settings
+PUBLIC_MEDIA_LOCATION = "media"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
+DEFAULT_FILE_STORAGE = "config.storage_backends.MediaStorage"
+
+# s3 private media settings
+PRIVATE_MEDIA_LOCATION = "private"
+PRIVATE_FILE_STORAGE = "config.storage_backends.PrivateMediaStorage"
+
+# CELERY CONFIGURATION
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", "redis://redis:6379")
+CELERY_RESULT_BACKEND = env.str("CELERY_BROKER_URL", "redis://redis:6379")
+
+# CACHES
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"{env.str('REDIS_URL', 'redis://redis:6379/0')}",
+        "KEY_PREFIX": "mint-backend",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
+###################################################################
+# Email Backend
+###################################################################
+EMAIL_BACKEND = "django_ses.SESBackend"
+AWS_SES_REGION_NAME = "sa-east-1"
+DEFAULT_FROM_EMAIL = "contacto@mintapp.info"
+AWS_SES_REGION_ENDPOINT = "email.sa-east-1.amazonaws.com"
