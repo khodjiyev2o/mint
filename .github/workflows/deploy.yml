@@ -12,8 +12,8 @@ jobs:
        - name: copy file via ssh password
          uses: appleboy/scp-action@v0.1.4
          with:
-            host: 18.228.232.232
-            username: ec2-user
+            host: ${{ secrets.SERVER_IP_ADDRESS }}
+            username: ${{ secrets.SERVER_USERNAME }}
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             port: 22
             source: .
@@ -21,8 +21,8 @@ jobs:
        - name: SSH into server and deploy
          uses: appleboy/ssh-action@master
          with:
-             host: 18.228.232.232
-             username: ec2-user
+             host: ${{ secrets.SERVER_IP_ADDRESS }}
+             username: ${{ secrets.SERVER_USERNAME }}
              key: ${{ secrets.SSH_PRIVATE_KEY }}
              script: |
                cd ~/mint
