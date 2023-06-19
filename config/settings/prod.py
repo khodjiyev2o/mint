@@ -6,12 +6,12 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
-        "USER": os.environ.get("SQL_USER", "user"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
-        "HOST": os.environ.get("SQL_HOST", "localhost"),
-        "PORT": os.environ.get("SQL_PORT", "5432"),
+        "ENGINE": os.environ.get("SQL_ENGINE_PROD", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("SQL_DATABASE_PROD", BASE_DIR / "db.sqlite3"),
+        "USER": os.environ.get("SQL_USER_PROD", "user"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD_PROD", "password"),
+        "HOST": os.environ.get("SQL_HOST_PROD", "localhost"),
+        "PORT": os.environ.get("SQL_PORT_PROD", "5432"),
     }
 }
 
