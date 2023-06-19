@@ -10,56 +10,50 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ("payment", "0002_initial"),
         ("preventa", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("payment", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="usercard",
+            model_name="usercontentpaymentplan",
             name="user",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
+                related_name="user_content_payment_plans",
                 to=settings.AUTH_USER_MODEL,
                 verbose_name="User",
             ),
         ),
         migrations.AddField(
-            model_name="order",
-            name="audio",
+            model_name="usercontent",
+            name="order",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="payment.order",
+                verbose_name="Order",
+            ),
+        ),
+        migrations.AddField(
+            model_name="usercontent",
+            name="preventa_audio",
             field=models.ForeignKey(
                 blank=True,
                 null=True,
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="orders",
+                on_delete=django.db.models.deletion.SET_NULL,
                 to="preventa.audio",
-                verbose_name="Audio",
+                verbose_name="Bought Audio",
             ),
         ),
         migrations.AddField(
-            model_name="order",
+            model_name="usercontent",
             name="user",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
+                related_name="user_preventa_audios",
                 to=settings.AUTH_USER_MODEL,
                 verbose_name="User",
             ),
-        ),
-        migrations.AddField(
-            model_name="order",
-            name="user_card",
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=django.db.models.deletion.PROTECT,
-                related_name="orders",
-                to="payment.usercard",
-                verbose_name="User card",
-            ),
-        ),
-        migrations.AlterUniqueTogether(
-            name="usercard",
-            unique_together={("user", "card_number")},
         ),
     ]

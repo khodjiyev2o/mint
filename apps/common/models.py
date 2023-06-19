@@ -31,11 +31,19 @@ class Content(BaseModel):
         self.full_clean()
         super(Content, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.title}"
+
 
 class PaymentPlan(BaseModel):
-    content = models.ForeignKey(Content, verbose_name=_("Content"), on_delete=models.CASCADE)
+    content = models.ForeignKey(
+        Content, verbose_name=_("Content"), on_delete=models.CASCADE, related_name="payment_plans"
+    )
     type = models.CharField(_("Type"), max_length=255, choices=PaymentType.choices, default=PaymentType.ONE_TIME)
     price = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name=_("Price"))
+
+    def __str__(self):
+        return f"{self.type}"
 
 
 __all__ = ["PaymentPlan", "Content", "BaseModel"]

@@ -21,8 +21,17 @@ class Audio(Content):
 
         super().save(*args, **kwargs)
 
+    def is_bought(self, user):
+        return (
+            UserContent.objects.filter(user=user, preventa_audio=self).exists()
+            and UserContentPaymentPlan.objects.filter(user=user, content=self).first().available_reproductions > 0
+        )
+
 
 class UserContent(BaseModel):
+    user = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, related_name="user_preventa_audios", verbose_name=_("User")
+    )
     preventa_audio = models.ForeignKey(
         Audio,
         verbose_name=_("Bought Audio"),
@@ -31,7 +40,6 @@ class UserContent(BaseModel):
         blank=True,
     )
     order = models.OneToOneField("payment.Order", on_delete=models.CASCADE, verbose_name=_("Order"))
-    watched_time = models.PositiveIntegerField(default=4, help_text="Used when content is bought for 4 repro...")
 
     def __str__(self):
         if self.preventa_audio:
@@ -46,3 +54,14 @@ class UserContent(BaseModel):
     def save(self, *args, **kwargs):
         self.full_clean()
         super(UserContent, self).save(*args, **kwargs)
+
+
+class UserContentPaymentPlan(BaseModel):
+    user = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, related_name="user_content_payment_plans", verbose_name=_("User")
+    )
+    content = models.ForeignKey(
+        Content, verbose_name=_("Content"), on_delete=models.CASCADE, related_name="user_payment_plans"
+    )
+    payment_plan = models.ForeignKey("common.PaymentPlan", verbose_name=_("Payment Plan"), on_delete=models.CASCADE)
+    available_reproductions = models.IntegerField(default=4, help_text="Used when content is bought for 4 repro...")

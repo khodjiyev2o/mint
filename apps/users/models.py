@@ -28,6 +28,10 @@ class User(AbstractUser, BaseModel):
 
     @property
     def full_name(self):
+        if self.first_name:
+            return f"{self.first_name}"
+        if self.last_name:
+            return f"{self.last_name}"
         return f"{self.first_name} {self.last_name}"
 
     @property
