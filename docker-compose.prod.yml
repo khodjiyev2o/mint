@@ -23,3 +23,13 @@ services:
     command: celery -A config.celery worker -l INFO
     restart: always
     container_name: celery_worker
+
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file: .env.prod.db
+    container_name: db
+
+volumes:
+  postgres_data:
