@@ -1,0 +1,32 @@
+name: MINT CI/CD
+run-name: ${{ github.actor }} is running the job the mint 🚀
+on:
+  push:
+      branches: [develop, main]
+jobs:
+   deploy:
+     runs-on: ubuntu-latest
+     if: github.ref == 'refs/heads/main'
+     steps:
+       - uses: actions/checkout@v3
+       - name: copy file via ssh password
+         uses: appleboy/scp-action@v0.1.4
+         with:
+            host: 18.228.232.232
+            username: ec2-user
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: 22
+            source: .
+            target: mint
+       - name: SSH into server and deploy
+         uses: appleboy/ssh-action@master
+         with:
+             host: 18.228.232.232
+             username: ec2-user
+             key: ${{ secrets.SSH_PRIVATE_KEY }}
+             script: |
+               cd ~/mint
+               docker-compose down 
+               docker container prune -f
+               docker image prune -f
+               docker-compose up --build -d
