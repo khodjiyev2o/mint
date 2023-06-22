@@ -13,3 +13,6 @@ fi
 python3 manage.py migrate
 python3 manage.py collectstatic --noinput
 exec "$@"
+
+#redis-cli
+# sudo chmod +w /etc - write permission for redis
