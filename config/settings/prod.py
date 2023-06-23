@@ -35,3 +35,4 @@ CSRF_COOKIE_SECURE = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["https://new.mintapp.info", "https://web.mintapp.info"]
