@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # READING ENV
 env = environ.Env()
-env.read_env(os.path.join(BASE_DIR, ".env.prod"))
+env.read_env(os.path.join(BASE_DIR, ".env"))
 
 
 SECRET_KEY = env.str("SECRET_KEY")
@@ -171,3 +171,13 @@ EMAIL_BACKEND = "django_ses.SESBackend"
 AWS_SES_REGION_NAME = "sa-east-1"
 DEFAULT_FROM_EMAIL = "contacto@mintapp.info"
 AWS_SES_REGION_ENDPOINT = "email.sa-east-1.amazonaws.com"
+
+
+# Flow Configuration
+
+FLOW_SECRET_KEY = os.environ.get("FLOW_SANDBOX_SECRET_KEY")
+FLOW_API_KEY = os.environ.get("FLOW_SANDBOX_API_KEY")
+FLOW_API_URL = os.environ.get("FLOW_SANDBOX_API_URL")
+
+# OTHER SETTINGS
+FRONTEND_URL = os.environ.get("FRONTEND_URL")

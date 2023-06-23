@@ -10,6 +10,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("users/", include("apps.users.urls")),
     path("preventa/", include("apps.preventa.urls")),
+    path("payment/", include("apps.payment.urls")),
 ]
 
 urlpatterns += swaggerurlpatterns

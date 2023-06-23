@@ -12,7 +12,7 @@ admin.site.register(Audio, AudioAdmin)
 
 
 class UserContentAdmin(admin.ModelAdmin):
-    list_display = ["preventa_audio", "order", "created_at"]
+    list_display = ["content", "order", "created_at"]
     list_filter = ["user"]
 
 
