@@ -12,9 +12,9 @@ schema_view = get_schema_view(
         default_version="v0.1",
         description="Test",
         terms_of_service="https://yandex.ru/legal/confidential/",
-        generator_class=BothHttpAndHttpsSchemaGenerator,
         license=openapi.License(name="BSD License"),
     ),
+    generator_class=BothHttpAndHttpsSchemaGenerator,
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
