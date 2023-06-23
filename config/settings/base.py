@@ -181,3 +181,4 @@ FLOW_API_URL = os.environ.get("FLOW_SANDBOX_API_URL")
 
 # OTHER SETTINGS
 FRONTEND_URL = os.environ.get("FRONTEND_URL")
+BACKEND_URL = os.environ.get("BACKEND_URL", "127.0.0.1:8000")

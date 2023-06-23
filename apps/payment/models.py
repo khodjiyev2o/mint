@@ -1,9 +1,12 @@
 import requests
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from apps.common.models import BaseModel
+from apps.preventa.models import UserContent
 from utils.services.encrypt import signature
 
 
@@ -63,12 +66,53 @@ class Order(BaseModel):
             params["subject"] = self.content.slug
             params["amount"] = self.total_amount
             params["email"] = self.user.email
-            params["urlConfirmation"] = settings.FRONTEND_URL + "/payment/Success"
+            params["urlConfirmation"] = settings.BACKEND_URL + reverse("confirm-transaction")
             params["urlReturn"] = settings.FRONTEND_URL + "/payment/Success"
             params["s"] = signature(**params)
             p = requests.post(settings.FLOW_API_URL + "/payment/create", params)
+
             data = p.json()
             return {"token": data["token"], "url": f"{data['url']}?token={data['token']}"}
+
+
+class Transaction(BaseModel):
+    order = models.ForeignKey("Order", on_delete=models.CASCADE, verbose_name=_("Order"))
+    transaction_id = models.CharField(max_length=255, verbose_name=_("Transaction ID"), null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Amount"))
+    status = models.CharField(max_length=63, verbose_name=_("Status"), choices=TransactionStatus.choices)
+    paid_at = models.DateTimeField(verbose_name=_("Paid At"), null=True, blank=True)
+    cancel_time = models.DateTimeField(verbose_name=_("Cancel Time"), null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.order} - {self.transaction_id}"
+
+    def apply(self):
+        self.status = TransactionStatus.PAID
+        self.paid_at = timezone.now()
+        UserContent.objects.get_or_create(user=self.order.user, content=self.order.content, order=self.order)
+
+        self.save()
+        self.apply_order()
+
+    def apply_order(self):
+        if self.order.provider != Provider.FLOW:
+            self.order.is_paid = True
+
+        self.order.save()
+
+    def cancel(self):
+        self.status = TransactionStatus.CANCELED
+        self.cancel_time = timezone.now()
+        UserContent.objects.get_or_create(user=self.order.user, content=self.order.content, order=self.order).delete()
+
+        self.save()
+        self.order.is_paid = False
+        self.order.is_canceled = True
+        self.order.save()
+
+    class Meta:
+        verbose_name = _("Transaction")
+        verbose_name_plural = _("Transactions")
 
 
 class UserCard(BaseModel):
