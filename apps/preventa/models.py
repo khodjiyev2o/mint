@@ -49,7 +49,7 @@ class UserContent(BaseModel):
         """Check if payment is  successfull"""
 
         if self.order.is_paid is False:
-            raise ValidationError(_("The payment is successfull yet"))
+            raise ValidationError(_("The payment is not successfull yet"))
 
     def save(self, *args, **kwargs):
         self.full_clean()

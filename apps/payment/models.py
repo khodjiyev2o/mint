@@ -100,7 +100,7 @@ class Transaction(BaseModel):
         self.apply_order()
 
     def apply_order(self):
-        if self.order.provider != Provider.FLOW:
+        if self.order.provider == Provider.FLOW:
             self.order.is_paid = True
 
         self.order.save()
