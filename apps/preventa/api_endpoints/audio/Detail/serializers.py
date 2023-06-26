@@ -7,7 +7,7 @@ from apps.users.models import User
 class CreatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("email", "full_name", "photo")
+        fields = ("full_name", "photo")
 
 
 class PreventaAudioDetailSerializer(serializers.ModelSerializer):
