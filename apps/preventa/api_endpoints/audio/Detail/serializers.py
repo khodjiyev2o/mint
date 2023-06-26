@@ -41,6 +41,8 @@ class PreventaAudioDetailSerializer(serializers.ModelSerializer):
             "creator",
             "is_bought",
             "audio_file",
+            "four_repr_price",
+            "price",
             "user_content_plan",
         )
 
