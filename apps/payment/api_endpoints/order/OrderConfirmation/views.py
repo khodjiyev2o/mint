@@ -1,13 +1,16 @@
 from rest_framework import response, views
 
+from apps.payment.models import Order
+
 
 class ConfirmAPIView(views.APIView):
     def post(self, request, *args, **kwargs):
+        print("Confirm")
+        print("args", args)
+        print("kwargs", kwargs)
         print("Request is POST:", request.data)
         print("Response is POST:", request)
-        return response.Response({"message": "Ok"}, status=200)
+        order = Order.objects.get(id=self.request.kwargs.get("pk"))
 
-    def get(self, request, *args, **kwargs):
-        print("Request is GET:", request)
-        print("Request is GET:", request.query_params)
+        print(order)
         return response.Response({"message": "Ok"}, status=200)

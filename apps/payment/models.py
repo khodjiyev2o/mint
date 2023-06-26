@@ -66,7 +66,7 @@ class Order(BaseModel):
             params["subject"] = self.content.slug
             params["amount"] = self.total_amount
             params["email"] = self.user.email
-            params["urlConfirmation"] = settings.BACKEND_URL + reverse("confirm-transaction")
+            params["urlConfirmation"] = settings.BACKEND_URL + reverse("confirm-transaction", kwargs={"pk": self.id})
             params["urlReturn"] = settings.FRONTEND_URL + "/payment/Success"
             params["s"] = signature(**params)
             p = requests.post(settings.FLOW_API_URL + "/payment/create", params)
