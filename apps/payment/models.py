@@ -72,7 +72,11 @@ class Order(BaseModel):
             p = requests.post(settings.FLOW_API_URL + "/payment/create", params)
 
             data = p.json()
-            print(data)
+            Transaction.objects.get_or_create(
+                order=self,
+                transaction_id=data["flowOrder"],
+                amount=self.total_amount,
+            )
             return {"token": data["token"], "url": f"{data['url']}?token={data['token']}"}
 
 
