@@ -25,7 +25,7 @@ class Audio(Content):
 
     def is_bought(self, user):
         four_repro_time = UserContentPaymentPlan.objects.filter(
-            user=user, content=self, payment_plan=PaymentType.FOUR_TIME_REPRODUCTION
+            user=user, content=self, payment_plan=PaymentType.FOUR_TIME
         ).last()
         if four_repro_time:
             return (
@@ -60,9 +60,22 @@ class UserContentPaymentPlan(BaseModel):
     user = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="user_content_payment_plans", verbose_name=_("User")
     )
-    content = models.ForeignKey(Content, verbose_name=_("Content"), on_delete=models.CASCADE)
+    order = models.OneToOneField("payment.Order", on_delete=models.CASCADE, verbose_name=_("Order"))
+    content = models.ForeignKey(
+        Content, verbose_name=_("Content"), on_delete=models.CASCADE, related_name="user_content_plan"
+    )
     payment_plan = models.CharField(
         _("Type"), max_length=255, choices=PaymentType.choices, default=PaymentType.ONE_TIME
     )
     available_reproductions = models.IntegerField(default=4, help_text="Used when content is bought for 4 repro...")
     limited_reproduction = models.BooleanField(default=False, verbose_name=_("Limited Reproduction"))
+
+    def clean(self):
+        """Check if payment is  successfull"""
+
+        if self.order.is_paid is False:
+            raise ValidationError(_("The payment is not successfull yet"))
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(UserContentPaymentPlan, self).save(*args, **kwargs)

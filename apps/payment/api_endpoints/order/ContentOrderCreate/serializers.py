@@ -35,4 +35,7 @@ class ContentOrderCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(detail={"total_amount": _("Invalid total amount")}, code="invalid")
 
     def get_payment_url(self, obj):
-        return obj.get_payment_url()
+        response = obj.get_payment_url()
+        if list(response.keys()) == ["code", "message"]:
+            raise serializers.ValidationError(detail={"Payment": _(f"{response['message']}")}, code="invalid")
+        return response

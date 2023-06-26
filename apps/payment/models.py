@@ -5,31 +5,10 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from apps.common.enums import PaymentType, Provider, TransactionStatus
 from apps.common.models import BaseModel
-from apps.preventa.models import UserContent
+from apps.preventa.models import UserContent, UserContentPaymentPlan
 from utils.services.encrypt import signature
-
-
-class OrderType(models.TextChoices):
-    AUDIO = "audio", _("Audio")
-
-
-class PaymentType(models.TextChoices):
-    ONE_TIME = "one_time", _("One Time")
-    FOUR_TIME = "four_time", _("Four Time")
-    ONE_MONTH = "one_month", _("One Month")
-    ONE_DAY = "one_day", _("One Day")
-
-
-class Provider(models.TextChoices):
-    FLOW = "flow", _("FLOW")
-
-
-class TransactionStatus(models.TextChoices):
-    WAITING = "waiting", _("Waiting")
-    PAID = "paid", _("Paid")
-    FAILED = "failed", _("Failed")
-    CANCELED = "canceled", _("Canceled")
 
 
 class Order(BaseModel):
@@ -72,12 +51,16 @@ class Order(BaseModel):
             p = requests.post(settings.FLOW_API_URL + "/payment/create", params)
 
             data = p.json()
-            Transaction.objects.get_or_create(
-                order=self,
-                transaction_id=data["flowOrder"],
-                amount=self.total_amount,
-            )
-            return {"token": data["token"], "url": f"{data['url']}?token={data['token']}"}
+            # Check if there is an error code from flow side
+            if data.get("code"):
+                return data
+            if data["flowOrder"]:
+                Transaction.objects.get_or_create(
+                    order=self,
+                    transaction_id=data["flowOrder"],
+                    amount=self.total_amount,
+                )
+                return {"token": data["token"], "url": f"{data['url']}?token={data['token']}"}
 
 
 class Transaction(BaseModel):
@@ -94,16 +77,13 @@ class Transaction(BaseModel):
     def apply(self):
         self.status = TransactionStatus.PAID
         self.paid_at = timezone.now()
-        UserContent.objects.get_or_create(user=self.order.user, content=self.order.content, order=self.order)
-
-        self.save()
-        self.apply_order()
-
-    def apply_order(self):
-        if self.order.provider == Provider.FLOW:
-            self.order.is_paid = True
-
+        self.order.is_paid = True
         self.order.save()
+        UserContent.objects.get_or_create(user=self.order.user, content=self.order.content, order=self.order)
+        UserContentPaymentPlan.objects.create(
+            user=self.order.user, content=self.order.content, order=self.order, payment_plan=self.order.payment_type
+        )
+        self.save()
 
     def cancel(self):
         self.status = TransactionStatus.CANCELED

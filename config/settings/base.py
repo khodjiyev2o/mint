@@ -137,7 +137,7 @@ AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 AWS_LOCATION = "static"
 STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
 STATICFILES_STORAGE = "config.storage_backends.StaticStorage"
-STATICFILES_DIRS = (BASE_DIR / "static",)
+
 
 # s3 public media settings
 PUBLIC_MEDIA_LOCATION = "media"
