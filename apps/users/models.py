@@ -28,6 +28,8 @@ class User(AbstractUser, BaseModel):
         if self.first_name:
             return f"{self.first_name}"
 
+        return None
+
     @property
     def full_name(self):
         if self.first_name and self.last_name:
@@ -36,6 +38,8 @@ class User(AbstractUser, BaseModel):
             return f"{self.last_name}"
         if self.first_name:
             return f"{self.first_name}"
+
+        return None
 
     @property
     def tokens(self):
