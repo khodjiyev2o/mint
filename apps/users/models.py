@@ -21,14 +21,10 @@ class User(AbstractUser, BaseModel):
     REQUIRED_FIELDS = []  # type: ignore
 
     def __str__(self):
-        if self.first_name and self.last_name:
-            return f"{self.first_name} {self.last_name}"
-        if self.last_name:
-            return f"{self.last_name}"
         if self.first_name:
-            return f"{self.first_name}"
+            return self.first_name
 
-        return None
+        return self.email
 
     @property
     def full_name(self):
@@ -38,8 +34,6 @@ class User(AbstractUser, BaseModel):
             return f"{self.last_name}"
         if self.first_name:
             return f"{self.first_name}"
-
-        return None
 
     @property
     def tokens(self):
