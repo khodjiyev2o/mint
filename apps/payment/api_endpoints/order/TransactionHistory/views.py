@@ -12,7 +12,9 @@ class TransactionHistoryListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Transaction.objects.filter(order__user=self.request.user, order__is_paid=True)
+        return Transaction.objects.select_related("order", "order__content").filter(
+            order__user=self.request.user, order__is_paid=True
+        )
 
 
 __all__ = ["TransactionHistoryListView"]

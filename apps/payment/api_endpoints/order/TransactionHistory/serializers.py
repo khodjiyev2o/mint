@@ -11,13 +11,18 @@ class ContentSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    content = ContentSerializer()
+
     class Meta:
         model = Order
-        fields = ("id", "content", "total_amount")
+        fields = (
+            "id",
+            "content",
+        )
 
 
 class TransactionHistorySerializer(serializers.ModelSerializer):
-    content = ContentSerializer()
+    order = OrderSerializer()
 
     class Meta:
         model = Transaction
