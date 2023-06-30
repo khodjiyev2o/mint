@@ -112,3 +112,46 @@ class UserCard(BaseModel):
         verbose_name = _("User Card")
         verbose_name_plural = _("User Cards")
         unique_together = ("user", "card_number")
+
+
+class FlowCustomer(BaseModel):
+    name = models.CharField(max_length=50, verbose_name=_("Name"))
+    cliente = models.ForeignKey("users.User", on_delete=models.PROTECT)
+    flow_customer_id = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.cliente.email}"
+
+    class Meta:
+        verbose_name = _("Flow Customer")
+        verbose_name_plural = _("Flow Customers")
+        unique_together = ("cliente", "flow_customer_id")
+
+    def set_and_get_customer_id(self, user):
+        params = {
+            "apiKey": settings.FLOW_API_KEY,
+            "name": self.name,
+            "email": self.cliente.email,
+            "externalId": self.cliente.email,
+        }
+        params["s"] = signature(**params)
+        p = requests.post(settings.FLOW_API_URL + "/customer/create", params)
+        data = p.json()
+
+        status = data.get("status", None)
+        flow_customer_id = data.get("customerId", None)
+        code = data.get("code", None)
+
+        # if status is okay and customer is new , save it
+        if status == 1 and flow_customer_id is not None:
+            self.flow_customer_id = flow_customer_id
+            self.save()
+            return flow_customer_id
+
+        # if customer is already registered , return from our db
+        elif code == 501:
+            try:
+                return FlowCustomer.objects.get(cliente=user).flow_customer_id
+            except FlowCustomer.DoesNotExist:
+                return None
+        return None

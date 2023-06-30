@@ -1,6 +1,10 @@
 from django.contrib import admin
 
-from apps.payment.models import Order
+from apps.payment.models import FlowCustomer, Order, UserCard
+
+
+admin.site.register(FlowCustomer)
+admin.site.register(UserCard)
 
 
 @admin.register(Order)
