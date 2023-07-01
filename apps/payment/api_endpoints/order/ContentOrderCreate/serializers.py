@@ -1,11 +1,12 @@
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from apps.payment.models import Order, PaymentType
+from apps.payment.api_endpoints.order.serializers import OrderWithCardSerializer
+from apps.payment.models import Order, PaymentType, Provider
 from apps.preventa.models import UserContent
 
 
-class ContentOrderCreateSerializer(serializers.ModelSerializer):
+class ContentOrderCreateSerializer(OrderWithCardSerializer):
     payment_url = serializers.SerializerMethodField()
 
     class Meta:
@@ -35,7 +36,9 @@ class ContentOrderCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(detail={"total_amount": _("Invalid total amount")}, code="invalid")
 
     def get_payment_url(self, obj):
-        response = obj.get_payment_url()
-        if list(response.keys()) == ["code", "message"]:
-            raise serializers.ValidationError(detail={"Payment": _(f"{response['message']}")}, code="invalid")
-        return response
+        if obj.provider == Provider.FLOW:
+            response = obj.get_payment_url()
+            if list(response.keys()) == ["code", "message"]:
+                raise serializers.ValidationError(detail={"Payment": _(f"{response['message']}")}, code="invalid")
+            return response
+        return

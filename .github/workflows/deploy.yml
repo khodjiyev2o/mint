@@ -25,6 +25,7 @@ jobs:
              username: ${{ secrets.SERVER_USERNAME }}
              key: ${{ secrets.SSH_PRIVATE_KEY }}
              script: |
+               sudo docker system prune -a -f
                cd ~/mint
                docker-compose down
                docker container prune -f

@@ -38,29 +38,31 @@ class Order(BaseModel):
         verbose_name_plural = _("Orders")
 
     def get_payment_url(self):
+        params = {
+            "apiKey": settings.FLOW_API_KEY,
+            "commerceOrder": self.id,
+            "subject": self.content.slug,
+            "amount": self.total_amount,
+            "email": self.user.email,
+            "urlConfirmation": settings.BACKEND_URL + reverse("confirm-transaction", kwargs={"pk": self.id}),
+            "urlReturn": settings.FRONTEND_URL + "/payment/Success",
+        }
         if self.provider == Provider.FLOW:
-            params = {}
-            params["apiKey"] = settings.FLOW_API_KEY
-            params["commerceOrder"] = self.id
-            params["subject"] = self.content.slug
-            params["amount"] = self.total_amount
-            params["email"] = self.user.email
-            params["urlConfirmation"] = settings.BACKEND_URL + reverse("confirm-transaction", kwargs={"pk": self.id})
-            params["urlReturn"] = settings.FRONTEND_URL + "/payment/Success"
             params["s"] = signature(**params)
-            p = requests.post(settings.FLOW_API_URL + "/payment/create", params)
+            response = requests.post(settings.FLOW_API_URL + "/payment/create", params).json()
 
-            data = p.json()
             # Check if there is an error code from flow side
-            if data.get("code"):
-                return data
-            if data["flowOrder"]:
+            if response.get("code"):
+                return response
+            if response["flowOrder"]:
                 Transaction.objects.get_or_create(
                     order=self,
-                    transaction_id=data["flowOrder"],
+                    transaction_id=response["flowOrder"],
                     amount=self.total_amount,
                 )
-                return {"token": data["token"], "url": f"{data['url']}?token={data['token']}"}
+                return {"token": response["token"], "url": f"{response['url']}?token={response['token']}"}
+        elif self.provider == Provider.CARD:
+            return "Payment with Card"
 
 
 class Transaction(BaseModel):
@@ -102,21 +104,22 @@ class Transaction(BaseModel):
 
 class UserCard(BaseModel):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, verbose_name=_("User"))
-    card_number = models.CharField(max_length=255, verbose_name=_("Card Number"))
-    expire_date = models.CharField(max_length=255, verbose_name=_("Expire Date"))
-    card_id = models.CharField(max_length=255, verbose_name=_("Card ID"))
-    token = models.CharField(max_length=255, verbose_name=_("Token"), null=True)
+    type = models.CharField(max_length=255, verbose_name=_("Card Number"))
+    last_four_digits = models.CharField(max_length=255, verbose_name=_("Card ID"))
+    registration_token = models.CharField(max_length=255, verbose_name=_("Token"), null=True)
     confirmed = models.BooleanField(default=False, verbose_name=_("Confirmed"))
+
+    def __str__(self):
+        return f"{self.user} | {self.type}"
 
     class Meta:
         verbose_name = _("User Card")
         verbose_name_plural = _("User Cards")
-        unique_together = ("user", "card_number")
 
 
 class FlowCustomer(BaseModel):
     name = models.CharField(max_length=50, verbose_name=_("Name"))
-    cliente = models.ForeignKey("users.User", on_delete=models.PROTECT)
+    cliente = models.ForeignKey("users.User", on_delete=models.PROTECT, related_name="flow_customer")
     flow_customer_id = models.CharField(max_length=50)
 
     def __str__(self):

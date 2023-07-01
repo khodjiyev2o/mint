@@ -11,6 +11,7 @@ class PaymentType(models.TextChoices):
 
 class Provider(models.TextChoices):
     FLOW = "flow", _("FLOW")
+    CARD = "card", _("CARD")
 
 
 class TransactionStatus(models.TextChoices):

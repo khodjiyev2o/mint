@@ -3,10 +3,11 @@ from django.urls import path
 from apps.payment.api_endpoints import (
     ConfirmAPIView,
     ContentOrderCreateAPIView,
-    CreaditCardAddResponseView,
+    CreditCardAddResponseView,
     FlowCustomerRegisterAPIView,
     GetLastTransactionStatusAPIView,
     TransactionHistoryListView,
+    UserCardListView,
 )
 
 
@@ -16,5 +17,6 @@ urlpatterns = [
     path("history/", TransactionHistoryListView.as_view(), name="transaction-history"),
     path("confirm/<int:pk>/", ConfirmAPIView.as_view(), name="confirm-transaction"),
     path("flow/card/", FlowCustomerRegisterAPIView.as_view(), name="flow-cliente-register"),
-    path("flow/card/response/", CreaditCardAddResponseView.as_view(), name="flow_credit_card_response"),
+    path("flow/card/response/", CreditCardAddResponseView.as_view(), name="flow_credit_card_response"),
+    path("user/card/", UserCardListView.as_view(), name="user-card-list"),
 ]
