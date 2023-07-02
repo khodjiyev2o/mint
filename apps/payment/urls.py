@@ -20,11 +20,3 @@ urlpatterns = [
     path("user/card/response/", CreditCardAddResponseView.as_view(), name="flow_credit_card_response"),
     path("user/cards/", UserCardListView.as_view(), name="user-cards-list"),
 ]
-# tests:
-# content-order-create
-# last-transaction-status
-# transaction-history-list
-# confirm-transaction
-# flow-cliente-register
-# flow_credit_card_response
-# user-cards-list
