@@ -13,10 +13,18 @@ from apps.payment.api_endpoints import (
 
 urlpatterns = [
     path("content/", ContentOrderCreateAPIView.as_view(), name="content-order-create"),
-    path("last-transaction/<int:pk>/", GetLastTransactionStatusAPIView.as_view(), name="get-last-transaction"),
-    path("history/", TransactionHistoryListView.as_view(), name="transaction-history"),
+    path("last-transaction/<int:pk>/", GetLastTransactionStatusAPIView.as_view(), name="last-transaction-status"),
+    path("history/", TransactionHistoryListView.as_view(), name="transaction-history-list"),
     path("confirm/<int:pk>/", ConfirmAPIView.as_view(), name="confirm-transaction"),
-    path("flow/card/", FlowCustomerRegisterAPIView.as_view(), name="flow-cliente-register"),
-    path("flow/card/response/", CreditCardAddResponseView.as_view(), name="flow_credit_card_response"),
-    path("user/card/", UserCardListView.as_view(), name="user-card-list"),
+    path("user/card/register/", FlowCustomerRegisterAPIView.as_view(), name="flow-cliente-register"),
+    path("user/card/response/", CreditCardAddResponseView.as_view(), name="flow_credit_card_response"),
+    path("user/cards/", UserCardListView.as_view(), name="user-cards-list"),
 ]
+# tests:
+# content-order-create
+# last-transaction-status
+# transaction-history-list
+# confirm-transaction
+# flow-cliente-register
+# flow_credit_card_response
+# user-cards-list

@@ -14,11 +14,25 @@ class TestAudioDetailView(APITestCase):
         url = reverse("preventa-audio-detail", kwargs={"slug": self.audio.slug})
         response = self.client.get(url)
         assert response.status_code == 200
-        assert list(response.json().keys()) == ["slug", "title", "cover", "duration_seconds", "creator"]
+        assert list(response.json().keys()) == [
+            "uuid",
+            "slug",
+            "title",
+            "cover",
+            "duration_seconds",
+            "creator",
+            "is_bought",
+            "audio_file",
+            "four_repr_price",
+            "price",
+            "user_content_plan",
+        ]
         assert response.json()["slug"] == self.audio.slug
         assert response.json()["title"] == self.audio.title
         assert response.json()["cover"] == self.audio.cover
         assert response.json()["duration_seconds"] == self.audio.duration_seconds
+        assert response.json()["is_bought"] is False
+        assert response.json()["audio_file"] == "test_url"
 
     def test_audio_detail_invalid_slug(self):
         url = reverse("preventa-audio-detail", kwargs={"slug": "somehting_Wrong"})

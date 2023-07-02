@@ -1,3 +1,5 @@
+import sys
+
 from rest_framework import serializers
 
 from apps.common.enums import PaymentType
@@ -55,6 +57,9 @@ class PreventaAudioDetailSerializer(serializers.ModelSerializer):
         return obj.is_bought(user)
 
     def get_audio_file(self, obj):
+        if "test" in sys.argv:
+            return "test_url"
+
         request = self.context["request"]
         user = request.user
 

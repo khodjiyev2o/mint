@@ -11,3 +11,9 @@ class FourReproductionPLayView(generics.UpdateAPIView):
     queryset = UserContentPaymentPlan.objects.all()
     serializer_class = FourReproductionPlaySerializer
     permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        try:
+            return UserContentPaymentPlan.objects.get(content__slug=self.kwargs.get("slug"))
+        except UserContentPaymentPlan.DoesNotExist:
+            return UserContentPaymentPlan.objects.none()

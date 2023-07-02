@@ -68,7 +68,7 @@ class UserContentPaymentPlan(BaseModel):
         _("Type"), max_length=255, choices=PaymentType.choices, default=PaymentType.ONE_TIME
     )
     available_reproductions = models.IntegerField(default=4, help_text="Used when content is bought for 4 repro...")
-    limited_reproduction = models.BooleanField(default=False, verbose_name=_("Limited Reproduction"))
+    limited_reproduction = models.BooleanField(default=True, verbose_name=_("Limited Reproduction"))
 
     def clean(self):
         """Check if payment is  successfull"""

@@ -8,5 +8,7 @@ from apps.preventa.api_endpoints import (
 
 urlpatterns = [
     path("audio/<str:slug>/", PreventaAudioDetailView.as_view(), name="preventa-audio-detail"),
-    path("four-reproduction/play/<int:pk>", FourReproductionPLayView.as_view(), name="preventa-four-reproduction-play"),
+    path(
+        "four-reproduction/play/<str:slug>", FourReproductionPLayView.as_view(), name="preventa-four-reproduction-play"
+    ),
 ]

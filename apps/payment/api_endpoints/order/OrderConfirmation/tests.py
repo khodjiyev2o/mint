@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from apps.common.enums import PaymentType, Provider, TransactionStatus
+from apps.common.enums import PaymentType, Provider
 from apps.payment.models import Order, Transaction
 from apps.preventa.models import Audio
 from apps.users.models import User
@@ -18,20 +18,17 @@ class TestContentOrderCreateView(APITestCase):
             content=self.audio,
             provider=Provider.FLOW,
             total_amount=self.audio.four_repr_price,
-            is_paid=True,
             payment_type=PaymentType.FOUR_TIME,
         )
-        transaction = Transaction.objects.create(
+        self.transaction = Transaction.objects.create(
             order=self.order,
             transaction_id="flowOrder",
             amount=self.order.total_amount,
         )
-        transaction.apply()
 
-    def test_get_last_transaction_status(self):
-        url = reverse("last-transaction-status", kwargs={"pk": self.order.id})
-        headers = {"HTTP_AUTHORIZATION": f"Bearer {self.creator.tokens.get('access')}"}
-        response = self.client.get(url, **headers)
+    def test_confirm_order_by_flow(self):
+        url = reverse("confirm-transaction", kwargs={"pk": self.order.id})
+        response = self.client.post(url)
+
         assert response.status_code == 200
-        assert list(response.json().keys()) == ["id", "status"]
-        assert response.json()["status"] == TransactionStatus.PAID
+        assert response.json() == {"message": "Ok"}
