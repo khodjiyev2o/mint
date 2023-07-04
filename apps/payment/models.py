@@ -117,9 +117,9 @@ class Transaction(BaseModel):
 
 class UserCard(BaseModel):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, verbose_name=_("User"))
-    type = models.CharField(max_length=255, verbose_name=_("Card Number"))
-    last_four_digits = models.CharField(max_length=255, verbose_name=_("Card ID"))
-    registration_token = models.CharField(max_length=255, verbose_name=_("Token"), null=True)
+    type = models.CharField(max_length=255, verbose_name=_("Type"))
+    last_four_digits = models.CharField(max_length=255, verbose_name=_("Last Four Digits"))
+    registration_token = models.CharField(max_length=255, verbose_name=_("Registration Token"), null=True)
     confirmed = models.BooleanField(default=False, verbose_name=_("Confirmed"))
 
     def __str__(self):
