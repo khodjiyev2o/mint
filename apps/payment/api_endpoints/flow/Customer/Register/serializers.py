@@ -23,9 +23,10 @@ class FlowCustomerCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.context["request"].user
+        name = validated_data.pop("name")
 
-        user, _ = FlowCustomer.objects.get_or_create(cliente=user)
-        return user
+        new_user, _ = FlowCustomer.objects.get_or_create(cliente=user, name=name)
+        return new_user
 
     @staticmethod
     def addCreditCard(customer_id: str) -> str:
