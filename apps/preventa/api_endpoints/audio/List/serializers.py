@@ -11,6 +11,8 @@ class CreatorSerializer(serializers.ModelSerializer):
 
 
 class AudioListSerializer(serializers.ModelSerializer):
+    creator = CreatorSerializer()
+
     class Meta:
         model = Audio
-        fields = ("uuid", "slug", "cover", "title")
+        fields = ("uuid", "slug", "cover", "title", "creator")
