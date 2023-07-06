@@ -4,14 +4,14 @@ from apps.preventa.models import Audio
 from apps.users.models import User
 
 
-class CreatorSerializer(serializers.ModelSerializer):
+class CreatorPreventaSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("full_name", "photo")
 
 
 class AudioListSerializer(serializers.ModelSerializer):
-    creator = CreatorSerializer()
+    creator = CreatorPreventaSerializer()
 
     class Meta:
         model = Audio
