@@ -26,7 +26,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-CSRF_TRUSTED_ORIGINS = ["https://new.mintapp.info", "https://web.mintapp.info"]
+CSRF_TRUSTED_ORIGINS = ["https://new.mintapp.info", "https://web.mintapp.info", "http://localhost:3000"]
 CSRF_COOKIE_SECURE = True
 
 
