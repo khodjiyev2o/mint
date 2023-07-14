@@ -28,8 +28,15 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework.authtoken",
     "drf_yasg",
     "storages",
+    "dj_rest_auth",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.instagram",
 ]
 DJANGO_APPS = [
     "jazzmin",
@@ -104,6 +111,34 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+SITE_ID = 1
+
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {  # noqa
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+    },
+}
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env.str("DJANGO_GOOGLE_OAUTH2_CLIENT_ID", "")  # noqa
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env.str("DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET", "")  # noqa
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_IGNORE_DEFAULT_SCOPE = True
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+]
+OAUTH_CALLBACK_URL = f"{env.str('HOST', '')}/login"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
@@ -184,3 +219,5 @@ FLOW_API_URL = os.environ.get("FLOW_SANDBOX_API_URL")
 # OTHER SETTINGS
 FRONTEND_URL = os.environ.get("FRONTEND_URL")
 BACKEND_URL = os.environ.get("BACKEND_URL", "127.0.0.1:8000")
+
+REST_USE_JWT = True
