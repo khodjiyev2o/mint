@@ -30,7 +30,7 @@ class PreventaAudioDetailSerializer(serializers.ModelSerializer):
     creator = CreatorSerializer()
     is_bought = serializers.SerializerMethodField()
     audio_file = serializers.SerializerMethodField()
-    user_content_plan = UserContentPaymentPlanSerializer(many=True)
+    user_content_plan = serializers.SerializerMethodField()
 
     class Meta:
         model = Audio
@@ -70,3 +70,14 @@ class PreventaAudioDetailSerializer(serializers.ModelSerializer):
             return obj.file.url
 
         return
+
+    def get_user_content_plan(self, obj):
+        user = self.context["request"].user
+
+        if not user.is_authenticated:
+            return
+
+        if not obj.is_bought(user):
+            return
+
+        return UserContentPaymentPlanSerializer(obj.user_content_plan, many=True).data

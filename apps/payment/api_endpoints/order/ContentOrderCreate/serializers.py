@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from apps.payment.api_endpoints.order.serializers import OrderWithCardSerializer
 from apps.payment.models import Order, PaymentType, Provider
-from apps.preventa.models import UserContent
+from apps.preventa.models import UserContent, UserContentPaymentPlan
 
 
 class ContentOrderCreateSerializer(OrderWithCardSerializer):
@@ -16,12 +16,24 @@ class ContentOrderCreateSerializer(OrderWithCardSerializer):
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        if UserContent.objects.filter(content=attrs["content"], user=self.context["request"].user).exists():
+
+        if self.already_bought(attrs):
             raise serializers.ValidationError(
-                detail={"content": _("You have already bought this audio")}, code="already_bought"
+                detail={"content": _("You have already bought this content")}, code="already_bought"
             )
         self.check_total_amount(attrs)
         return attrs
+
+    def already_bought(self, attrs):
+        four_repro_time = UserContentPaymentPlan.objects.filter(
+            user=self.context["request"].user, content=attrs["content"], payment_plan=PaymentType.FOUR_TIME
+        ).last()
+        if four_repro_time:
+            return (
+                UserContent.objects.filter(user=self.context["request"].user, content=attrs["content"]).exists()
+                and four_repro_time.available_reproductions > 0
+            )
+        return UserContent.objects.filter(user=self.context["request"].user, content=attrs["content"]).exists()
 
     def check_total_amount(self, attrs):
         if attrs["payment_type"] == PaymentType.ONE_TIME:

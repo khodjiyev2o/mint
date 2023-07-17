@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path, re_path
+from django.urls import include, path
 
 from .swagger import swaggerurlpatterns
 
@@ -11,7 +11,6 @@ urlpatterns = [
     path("users/", include("apps.users.urls")),
     path("preventa/", include("apps.preventa.urls")),
     path("payment/", include("apps.payment.urls")),
-    re_path(r"^accounts/", include("allauth.urls"), name="socialaccount_signup"),
 ]
 
 urlpatterns += swaggerurlpatterns
