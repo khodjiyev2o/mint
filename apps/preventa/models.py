@@ -24,15 +24,16 @@ class Audio(Content):
         super().save(*args, **kwargs)
 
     def is_bought(self, user):
-        four_repro_time = UserContentPaymentPlan.objects.filter(
-            user=user, content=self, payment_plan=PaymentType.FOUR_TIME
-        ).last()
-        if four_repro_time:
+        user_payment_plan = UserContentPaymentPlan.objects.filter(user=user, content=self).last()
+        if user_payment_plan.payment_plan == PaymentType.FOUR_TIME:
             return (
                 UserContent.objects.filter(user=user, content=self).exists()
-                and four_repro_time.available_reproductions > 0
+                and user_payment_plan.available_reproductions > 0
             )
-        return UserContent.objects.filter(user=user, content=self).exists()
+        return (
+            UserContent.objects.filter(user=user, content=self).exists()
+            and user_payment_plan.limited_reproduction is False
+        )
 
 
 class UserContent(BaseModel):

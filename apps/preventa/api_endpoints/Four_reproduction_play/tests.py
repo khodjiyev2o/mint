@@ -64,3 +64,24 @@ class TestFourReproductionPlayView(APITestCase):
         response = self.client.patch(url, **headers)
         assert response.json()["available_reproductions"] == 3
         assert response.json()["payment_plan"] == PaymentType.FOUR_TIME
+        assert response.json()["is_bought"] is True
+
+    def test_four_repr_decrease_to_zero(self):
+        url = reverse("preventa-four-reproduction-play", kwargs={"slug": self.audio.slug})
+        headers = {"HTTP_AUTHORIZATION": f"Bearer {self.creator.tokens.get('access')}"}
+        response = self.client.patch(url, **headers)
+        assert response.json()["available_reproductions"] == 3
+        assert response.json()["payment_plan"] == PaymentType.FOUR_TIME
+        assert response.json()["is_bought"] is True
+        response = self.client.patch(url, **headers)
+        assert response.json()["available_reproductions"] == 2
+        assert response.json()["payment_plan"] == PaymentType.FOUR_TIME
+        assert response.json()["is_bought"] is True
+        response = self.client.patch(url, **headers)
+        assert response.json()["available_reproductions"] == 1
+        assert response.json()["payment_plan"] == PaymentType.FOUR_TIME
+        assert response.json()["is_bought"] is True
+        response = self.client.patch(url, **headers)
+        assert response.json()["available_reproductions"] == 0
+        assert response.json()["payment_plan"] == PaymentType.FOUR_TIME
+        assert response.json()["is_bought"] is False

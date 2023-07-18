@@ -14,6 +14,6 @@ class FourReproductionPLayView(generics.UpdateAPIView):
 
     def get_object(self):
         try:
-            return UserContentPaymentPlan.objects.get(content__slug=self.kwargs.get("slug"))
+            return UserContentPaymentPlan.objects.filter(content__slug=self.kwargs.get("slug")).last()
         except UserContentPaymentPlan.DoesNotExist:
             return UserContentPaymentPlan.objects.none()

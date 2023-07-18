@@ -25,15 +25,23 @@ class ContentOrderCreateSerializer(OrderWithCardSerializer):
         return attrs
 
     def already_bought(self, attrs):
-        four_repro_time = UserContentPaymentPlan.objects.filter(
-            user=self.context["request"].user, content=attrs["content"], payment_plan=PaymentType.FOUR_TIME
+        user_payment_plan = UserContentPaymentPlan.objects.filter(
+            user=self.context["request"].user, content=attrs["content"]
         ).last()
-        if four_repro_time:
+        # User did not buy anything so far
+        if user_payment_plan is None:
+            return False
+        # User bought the four repr content
+        if user_payment_plan.payment_plan == PaymentType.FOUR_TIME:
             return (
                 UserContent.objects.filter(user=self.context["request"].user, content=attrs["content"]).exists()
-                and four_repro_time.available_reproductions > 0
+                and user_payment_plan.available_reproductions > 0
             )
-        return UserContent.objects.filter(user=self.context["request"].user, content=attrs["content"]).exists()
+        # User bought unlimited one
+        return (
+            UserContent.objects.filter(user=self.context["request"].user, content=attrs["content"]).exists()
+            and user_payment_plan.limited_reproduction is False
+        )
 
     def check_total_amount(self, attrs):
         if attrs["payment_type"] == PaymentType.ONE_TIME:

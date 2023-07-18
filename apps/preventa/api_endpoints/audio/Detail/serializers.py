@@ -80,4 +80,4 @@ class PreventaAudioDetailSerializer(serializers.ModelSerializer):
         if not obj.is_bought(user):
             return
 
-        return UserContentPaymentPlanSerializer(obj.user_content_plan, many=True).data
+        return UserContentPaymentPlanSerializer(obj.user_content_plan.order_by("-id")[:1], many=True).data
