@@ -25,6 +25,8 @@ class Audio(Content):
 
     def is_bought(self, user):
         user_payment_plan = UserContentPaymentPlan.objects.filter(user=user, content=self).last()
+        if user_payment_plan is None:
+            return False
         if user_payment_plan.payment_plan == PaymentType.FOUR_TIME:
             return (
                 UserContent.objects.filter(user=user, content=self).exists()
