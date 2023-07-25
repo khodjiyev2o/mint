@@ -11,7 +11,7 @@ class TestContentOrderCreateView(APITestCase):
     def setUp(self):
         self.creator = User.objects.create(is_creator=True, email="samandarkhodjiyev@gmail.com")
         self.audio = Audio.objects.create(
-            title="audio_title", creator=self.creator, price="700.00", four_repr_price="500.00"
+            title="audio_title", creator=self.creator, one_month_price="700.00", four_repr_price="500.00"
         )
         self.order = Order.objects.create(
             user=self.creator,

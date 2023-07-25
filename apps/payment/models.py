@@ -91,13 +91,11 @@ class Transaction(BaseModel):
         self.order.save()
 
         UserContent.objects.get_or_create(user=self.order.user, content=self.order.content, order=self.order)
-        limited_reproduction = bool(self.order.payment_type != PaymentType.ONE_TIME)
         UserContentPaymentPlan.objects.create(
             user=self.order.user,
             content=self.order.content,
             order=self.order,
             payment_plan=self.order.payment_type,
-            limited_reproduction=limited_reproduction,
         )
 
     def cancel(self):

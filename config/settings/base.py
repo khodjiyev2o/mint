@@ -158,7 +158,7 @@ CELERY_RESULT_BACKEND = env.str("CELERY_BROKER_URL", "redis://redis:6379")
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"{env.str('REDIS_URL', 'redis://redis:6379/0')}",
+        "LOCATION": f"{env.str('REDIS_URL', 'redis://localhost:6379/0')}",
         "KEY_PREFIX": "mint-backend",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
@@ -180,6 +180,10 @@ AWS_SES_REGION_ENDPOINT = "email.sa-east-1.amazonaws.com"
 FLOW_SECRET_KEY = os.environ.get("FLOW_SANDBOX_SECRET_KEY")
 FLOW_API_KEY = os.environ.get("FLOW_SANDBOX_API_KEY")
 FLOW_API_URL = os.environ.get("FLOW_SANDBOX_API_URL")
+
+# TWILLIO SETTINGS
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
 
 # OTHER SETTINGS
 FRONTEND_URL = os.environ.get("FRONTEND_URL")

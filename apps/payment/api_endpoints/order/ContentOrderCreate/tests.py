@@ -11,7 +11,7 @@ class TestContentOrderCreateView(APITestCase):
     def setUp(self):
         self.creator = User.objects.create(is_creator=True, email="samandarkhodjiyev@gmail.com")
         self.audio = Audio.objects.create(
-            title="audio_title", creator=self.creator, price="500.00", four_repr_price="300.00"
+            title="audio_title", creator=self.creator, one_month_price="500.00", four_repr_price="300.00"
         )
 
     def test_order_create_flow(self):
@@ -19,12 +19,11 @@ class TestContentOrderCreateView(APITestCase):
         headers = {"HTTP_AUTHORIZATION": f"Bearer {self.creator.tokens.get('access')}"}
         data = {
             "content": self.audio.uuid,
-            "payment_type": PaymentType.ONE_TIME,
+            "payment_type": PaymentType.ONE_MONTH,
             "provider": Provider.FLOW,
-            "total_amount": self.audio.price,
+            "total_amount": self.audio.one_month_price,
         }
         response = self.client.post(url, data=data, **headers)
-
         assert response.status_code == 201
 
         assert response.json()["content"] == str(data["content"])
@@ -49,7 +48,6 @@ class TestContentOrderCreateView(APITestCase):
             order=new_order,
             payment_plan=PaymentType.FOUR_TIME,
             available_reproductions=4,
-            limited_reproduction=True,
         )
         url = reverse("content-order-create")
         headers = {"HTTP_AUTHORIZATION": f"Bearer {self.creator.tokens.get('access')}"}
@@ -79,7 +77,6 @@ class TestContentOrderCreateView(APITestCase):
             order=new_order,
             payment_plan=PaymentType.FOUR_TIME,
             available_reproductions=0,
-            limited_reproduction=True,
         )
         url = reverse("content-order-create")
         headers = {"HTTP_AUTHORIZATION": f"Bearer {self.creator.tokens.get('access')}"}

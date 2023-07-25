@@ -18,7 +18,7 @@ class Content(BaseModel):
     slug = models.SlugField(unique=True, verbose_name=_("Slug"))
     title = models.CharField(verbose_name=_("Title"), max_length=256)
     creator = models.ForeignKey("users.User", on_delete=models.CASCADE)
-    price = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    one_month_price = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     four_repr_price = models.DecimalField(default=0, max_digits=10, decimal_places=2)
 
     def clean(self):

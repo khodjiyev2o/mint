@@ -15,15 +15,21 @@ class CreatorSerializer(serializers.ModelSerializer):
 
 class UserContentPaymentPlanSerializer(serializers.ModelSerializer):
     available_reproductions = serializers.SerializerMethodField()
+    expiration_date = serializers.SerializerMethodField()
 
     class Meta:
         model = UserContentPaymentPlan
-        fields = ("payment_plan", "available_reproductions", "limited_reproduction")
+        fields = ("payment_plan", "available_reproductions", "expiration_date")
 
     def get_available_reproductions(self, obj):
-        if obj.payment_plan == PaymentType.ONE_TIME:
+        if obj.payment_plan == PaymentType.ONE_MONTH:
             return
         return obj.available_reproductions
+
+    def get_expiration_date(self, obj):
+        if obj.payment_plan != PaymentType.ONE_MONTH:
+            return
+        return obj.expiration_date
 
 
 class PreventaAudioDetailSerializer(serializers.ModelSerializer):
@@ -44,7 +50,7 @@ class PreventaAudioDetailSerializer(serializers.ModelSerializer):
             "is_bought",
             "audio_file",
             "four_repr_price",
-            "price",
+            "one_month_price",
             "user_content_plan",
         )
 

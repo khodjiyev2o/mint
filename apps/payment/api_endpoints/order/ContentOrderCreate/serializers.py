@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -38,14 +39,15 @@ class ContentOrderCreateSerializer(OrderWithCardSerializer):
                 and user_payment_plan.available_reproductions > 0
             )
         # User bought unlimited one
-        return (
-            UserContent.objects.filter(user=self.context["request"].user, content=attrs["content"]).exists()
-            and user_payment_plan.limited_reproduction is False
-        )
+        if user_payment_plan.payment_plan == PaymentType.FOUR_TIME:
+            return (
+                UserContent.objects.filter(user=self.context["request"].user, content=attrs["content"]).exists()
+                and user_payment_plan.expiration_date >= timezone.now()
+            )
 
     def check_total_amount(self, attrs):
-        if attrs["payment_type"] == PaymentType.ONE_TIME:
-            total_amount = attrs["content"].price
+        if attrs["payment_type"] == PaymentType.ONE_MONTH:
+            total_amount = attrs["content"].one_month_price
 
         elif attrs["payment_type"] == PaymentType.FOUR_TIME:
             total_amount = attrs["content"].four_repr_price

@@ -1,5 +1,8 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -32,10 +35,8 @@ class Audio(Content):
                 UserContent.objects.filter(user=user, content=self).exists()
                 and user_payment_plan.available_reproductions > 0
             )
-        return (
-            UserContent.objects.filter(user=user, content=self).exists()
-            and user_payment_plan.limited_reproduction is False
-        )
+        if user_payment_plan.payment_plan == PaymentType.ONE_MONTH:
+            return user_payment_plan.expiration_date >= timezone.now()
 
 
 class UserContent(BaseModel):
@@ -71,7 +72,7 @@ class UserContentPaymentPlan(BaseModel):
         _("Type"), max_length=255, choices=PaymentType.choices, default=PaymentType.ONE_TIME
     )
     available_reproductions = models.IntegerField(default=4, help_text="Used when content is bought for 4 repro...")
-    limited_reproduction = models.BooleanField(default=True, verbose_name=_("Limited Reproduction"))
+    expiration_date = models.DateTimeField(null=True, blank=True)
 
     def clean(self):
         """Check if payment is  successfull"""
@@ -81,4 +82,10 @@ class UserContentPaymentPlan(BaseModel):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+
+        # Check if the instance is being created for the first time
+        if not self.pk and self.payment_plan == PaymentType.ONE_MONTH:
+            # Calculate the new expiration date as current date + 30 days
+            self.expiration_date = datetime.datetime.now() + datetime.timedelta(days=30)
+
         super(UserContentPaymentPlan, self).save(*args, **kwargs)

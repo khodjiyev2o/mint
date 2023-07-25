@@ -25,7 +25,7 @@ class TestAudioDetailView(APITestCase):
             "is_bought",
             "audio_file",
             "four_repr_price",
-            "price",
+            "one_month_price",
             "user_content_plan",
         ]
         assert response.json()["slug"] == self.audio.slug
@@ -65,7 +65,7 @@ class TestAudioDetailView(APITestCase):
             "is_bought",
             "audio_file",
             "four_repr_price",
-            "price",
+            "one_month_price",
             "user_content_plan",
         ]
         assert response.json()["slug"] == self.audio.slug
@@ -75,7 +75,7 @@ class TestAudioDetailView(APITestCase):
         assert len(response.json()["user_content_plan"]) == 1
         assert response.json()["user_content_plan"][0]["payment_plan"] == self.order.payment_type
         assert response.json()["user_content_plan"][0]["available_reproductions"] == 4
-        assert response.json()["user_content_plan"][0]["limited_reproduction"] is True
+        assert response.json()["user_content_plan"][0]["expiration_date"] is None
         assert response.json()["is_bought"] is True
         assert response.json()["audio_file"] == "test_url"
 
@@ -108,7 +108,7 @@ class TestAudioDetailView(APITestCase):
             "is_bought",
             "audio_file",
             "four_repr_price",
-            "price",
+            "one_month_price",
             "user_content_plan",
         ]
         assert response.json()["slug"] == self.audio.slug
@@ -118,7 +118,6 @@ class TestAudioDetailView(APITestCase):
         assert len(response.json()["user_content_plan"]) == 1
         assert response.json()["user_content_plan"][0]["payment_plan"] == self.order.payment_type
         assert response.json()["user_content_plan"][0]["available_reproductions"] == 4
-        assert response.json()["user_content_plan"][0]["limited_reproduction"] is True
         assert response.json()["is_bought"] is True
         assert response.json()["audio_file"] == "test_url"
 
@@ -127,9 +126,9 @@ class TestAudioDetailView(APITestCase):
             user=self.creator,
             content=self.audio,
             provider=Provider.FLOW,
-            total_amount=self.audio.price,
+            total_amount=self.audio.one_month_price,
             is_paid=True,
-            payment_type=PaymentType.ONE_TIME,
+            payment_type=PaymentType.ONE_MONTH,
         )
         transaction = Transaction.objects.create(
             order=self.order,
@@ -148,7 +147,7 @@ class TestAudioDetailView(APITestCase):
         assert len(response.json()["user_content_plan"]) == 1
         assert response.json()["user_content_plan"][0]["payment_plan"] == self.order.payment_type
         assert response.json()["user_content_plan"][0]["available_reproductions"] is None
-        assert response.json()["user_content_plan"][0]["limited_reproduction"] is False
+        print(response.json()["user_content_plan"][0]["expiration_date"])
         assert response.json()["is_bought"] is True
         assert response.json()["audio_file"] == "test_url"
 
